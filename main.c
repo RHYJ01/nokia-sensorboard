@@ -18,11 +18,113 @@
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 
+
+#define TASTER_R !(PIND&(1<<PD6)) && (entprell=0)
+#define TASTER_G !(PIND&(1<<PD5)) && (entprell=0)
+#define F_CPU 16000000UL  // 1 MHz
+
 /* Function prototypes */
+
+volatile uint8_t kreis=0;
+volatile uint8_t sek=0;
+volatile uint8_t min=0;
+volatile uint8_t h=0;
+uint8_t x_ball=3;
+uint8_t x_recht=45;
+uint8_t y_recht=34;
+uint8_t richtung=0;
+uint8_t taster_rot=0;
+uint8_t taster_grun=0;
+int8_t entprell=0;
+
+ISR(TIMER0_OVF_vect)
+{
+	static uint8_t ISR_zaehler=0;
+	static uint8_t ISR_ms_100=0;
+	static uint8_t ISR_sek=0;
+	static uint8_t ISR_min=0;
+	static uint8_t ISR_h=0;
+
+	
+	TCNT0 = 0;
+	ISR_zaehler++;//zähler hochrechnen
+	kreis++;
+	if(kreis==5)	
+	{
+		if(x_ball==3)
+		{
+			richtung=0;
+		}
+		
+		if(x_ball==42)
+		{
+			richtung=1;
+		}
+		
+		
+	
+		if(richtung==0)
+		{
+			x_ball++;
+		}
+		
+		if(richtung==1)
+		{
+			x_ball--;
+		}
+		
+		kreis=0;
+	}
+	
+	if(ISR_zaehler==12)
+	{
+		ISR_ms_100++; //milisekunden hochrechnen
+		
+		
+		if(ISR_ms_100==10)
+		
+		if(entprell!=0)
+		{
+			entprell--;
+		}
+		
+		{
+			sek++; //sekunden hochrechnen
+			ISR_sek++;
+			ISR_ms_100=0; //milisekunden auf 0 setzen
+		}
+		
+		if(ISR_sek==60)
+		{
+			min++; //minuten hochrechnen
+			ISR_min++;
+			ISR_sek=0; //sekunden auf 0 setzen
+			sek=0;
+		}
+		
+		if(ISR_min==60)
+		{
+			h++; //stunden hochrechnen
+			ISR_h++;
+			ISR_min=0; //minuten auf 0 setzen
+			min=0;
+		}
+		
+		ISR_zaehler=0; //zähler auf 0 setzen
+	}
+	
+}
+
 static void setup(void);
 
+static void setup(void)
+{
+	/* Set up glcd, also sets up SPI and relevent GPIO pins */
+	glcd_init();
+}
 
-uint8_t state;
+//uint8_t ms, ms10,ms100,sec,min,entprell, state;
+
 
 
 const unsigned char batman[] PROGMEM= 
@@ -80,13 +182,90 @@ const unsigned char batman[] PROGMEM=
 	0x00, 0x00, 0x00, 0x00
 	};
 	
+	uint8_t taster(uint8_t tast_nr) // Flankenerkennung
+{
+	static uint8_t pegelr=0;		//Variabeln initialisieren
+	static uint8_t pegelaltr=0;
+	static uint8_t pegelg=0;		//Variabeln initialisieren
+	static uint8_t pegelaltg=0;
+	uint8_t rueckgabe=0;
+	
+	
+	if(TASTER_R) //taster gedrückt
+	{
+		pegelr=1;
+			
+		if(pegelaltr==0)
+		{
+			rueckgabe=1;
+		}
+		
+		entprell=10;
+	}
+	
+	else
+	{
+		pegelr=0;
+		rueckgabe=0;
+	}
+	
+	if(TASTER_G) //taster gedrückt
+	{
+		pegelg=1;
+			
+		if(pegelaltg==0)
+		{
+			rueckgabe=1;
+		}
+		
+		entprell=10;
+	}
+	
+	else
+	{
+		pegelg=0;
+		rueckgabe=0;
+	}
+	
+	
+	
+	pegelaltg=pegelg; // Beide Pegel gleichsetzen
+	
+	
+	return rueckgabe; //rueckgabe wird zurückgegeben
+}
+
+
+
+	
+	
 int main(void)
 {	
 
-	DDRD=0xFF;
-	PORTD=0x00;
+	DDRB=0xFF; //Ganzer Port B als Ausgang 
+	PORTB=0x00; //Alle LEDs ausschalten
 
-	uint8_t x=0;
+	TCCR0A		= 0x00; 			//Timer Konfigurieren
+	TCCR0B		= 0x04; 			//Timer Konfigurieren
+	TIMSK0		|= (1 << TOIE0);	//Timer Konfigurieren
+	TIFR0	|= (1 << TOV0);			//Timer Konfigurieren
+	sei();
+	
+	/* Backlight pin PL3, set as output, set high for 100% output */
+	DDRB |= (1<<PB2);
+	PORTB |= (1<<PB2);
+	
+	DDRC |= (1<<PC3);
+	PORTC |= (1<<PC3);
+	
+	DDRD &= ~(1<<PD5);
+	PORTD |= (1<<PD5);
+	
+	DDRD &= ~(1<<PD6);
+	PORTD |= (1<<PD6);
+
+    sei();
+    // enable interrupts
 	
 	setup();
 	
@@ -94,69 +273,71 @@ int main(void)
 	glcd_write();
 	
 	
-	state=1;
-	
-	/*
-	if(PINC&(1<<PD6))
-	{
-		state++;
-		//for(x=0;x<5000;x++);
-	}
-	
-	if(state>8)
-	{
-		state=8;
-	}
-	
-	
-	if(PINC&(1<<PD6))
-	{
-		state--;
-		//for(x=0;x<5000;x++);
-	}
-	
-	if(state<=0)
-	{
-		state=0;
-	}
-	
-	*/
-	
+
 		
+	// Display
+	glcd_tiny_set_font(Font5x7,5,7,32,127);
+	glcd_clear_buffer();
+	
+	
 	while(1) 
 	{
-		switch(state)
-		{
-			case 1:	glcd_test_circles();
-					break;
-			case 2:	glcd_test_counter_and_graph();
-					break;
-			case 3:	glcd_test_text_up_down();
-					break;
-			case 4:	glcd_test_tiny_text();
-					break;
-			case 5:	glcd_test_hello_world();
-					break;
-			case 6:	glcd_test_rectangles();
-					break;
-			case 7:	glcd_test_scrolling_graph();
-					break;
-			case 8: glcd_draw_bitmap(batman);
-					glcd_write();
-					break;
-		}//end of switch
+		glcd_fill_rect(y_recht, x_recht, 16, 2, WHITE);
 		
+		if(!(PIND&(1<<PD5)))
+		{
+			taster_grun++;
+		}
+		
+		if(!(PIND&(1<<PD6)))
+		{
+			taster_rot++;
+		}
+		
+		
+		if(taster_grun==1)
+		{
+			y_recht++;
+			taster_grun=0;
+		}
+		
+		if(taster_rot==1)
+		{
+			y_recht--;
+			taster_rot=0;
+		}
+		
+		
+		glcd_fill_rect(y_recht, x_recht, 16, 2, BLACK);
+		
+		if(richtung==0)
+		{
+			glcd_fill_circle(42, x_ball-1, 3, WHITE);
+		}
+		
+		if(richtung==1)
+		{
+			glcd_fill_circle(42, x_ball+1, 3, WHITE);
+		}
+	
+//		glcd_draw_string_xy(0, 0, "Justin Rhyner");
+		
+		glcd_fill_circle(42, x_ball, 3, BLACK);
+		
+		glcd_draw_rect(0, 0, 84, 48, BLACK);
+		
+//		glcd_draw_line(83, 24, 0, 24, BLACK);
+		
+		
+		
+		
+		
+		
+		
+		glcd_write();
 	}//End of while
 	
 	//---------------------------------------------
 	
 	return 0;
 }//end of main
-
-
-static void setup(void)
-{
-	/* Set up glcd, also sets up SPI and relevent GPIO pins */
-	glcd_init();
-}
-
