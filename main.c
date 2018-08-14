@@ -23,21 +23,32 @@
 #define TASTER_G !(PIND&(1<<PD5)) && (entprell==0)
 #define F_CPU 16000000UL  // 1 MHz
 
+#define UP 0
+#define DOWN 1
+#define LINKS 0
+#define RECHTS 1
 /* Function prototypes */
 
-volatile uint8_t kreis=0;
+volatile uint8_t durchlauf_y=0;
+volatile uint8_t durchlauf_x=0;
 volatile uint8_t sek=0;
 volatile uint8_t min=0;
 volatile uint8_t h=0;
-uint8_t x_ball=3;
-uint8_t y_ball=42;
-uint8_t x_recht=45;
-uint8_t y_recht=34;
-uint8_t richtung=0;
+uint8_t y_ball=3;
+uint8_t x_ball=42;
+uint8_t y_recht=45;
+uint8_t x_recht=34;
+uint8_t x_richtung=0; //0=up/1=down
+uint8_t y_richtung=0; //0=l/1=r
 uint8_t taster_rot=0;
 uint8_t taster_grun=0;
 uint8_t entprell=0;
 uint8_t beginn=0;
+uint8_t score=0;
+uint8_t speed_y=4;
+uint8_t speed_x=0;
+
+char string[10]={};
 
 ISR(TIMER0_OVF_vect)
 {
@@ -50,47 +61,36 @@ ISR(TIMER0_OVF_vect)
 	
 	TCNT0 = 0;
 	ISR_zaehler++;//zähler hochrechnen
-	kreis++;
-	if(kreis==4)	
-	{
-		if(x_ball==3)
-		{
-			richtung=0;
-		}
-		
-		if((x_ball==42) && (y_ball>y_recht) && (y_ball<y_recht+16))
-		{
-			richtung=1;
-		}
-		
-		if(x_ball==47)
-		{
-			if((y_ball<y_recht) || (y_ball>y_recht+16))
-			{
-				beginn=1;
-			}
-		}
-		
+	durchlauf_y++;
+	durchlauf_x++;
 	
-		if(richtung==0)
+	if(durchlauf_y>=speed_y)	
+	{
+		durchlauf_y=0;
+		if(speed_y==0)
 		{
-			x_ball++;
+			speed_y=1;
 		}
-		
-		if(richtung==1)
-		{
-			x_ball--;
-		}
-		
-		if(beginn==1)
-		{
-			glcd_fill_circle(y_ball, x_ball-1, 3, WHITE);
-			x_ball=0;
-			beginn=0;
-		}
-		
-		kreis=0;
+			
+			if(y_richtung==UP)
+			{
+				y_ball--;
+			}else y_ball++;
 	}
+	
+	if(durchlauf_x>=speed_x)	
+	{
+		durchlauf_x=0;
+		if(speed_x!=0)
+		{
+			if(x_richtung==LINKS)
+			{
+				x_ball--;
+			}else x_ball++;
+		}
+	}
+	
+	
 	
 	if(entprell!=0)
 		{
@@ -287,7 +287,6 @@ int main(void)
 	glcd_write();
 	
 	
-
 		
 	// Display
 	glcd_tiny_set_font(Font5x7,5,7,32,127);
@@ -296,7 +295,7 @@ int main(void)
 	
 	while(1) 
 	{
-		glcd_fill_rect(y_recht, x_recht, 16, 2, WHITE);
+		glcd_fill_rect(x_recht, y_recht, 16, 2, WHITE);
 		
 		if(TASTER_G)
 		{
@@ -315,46 +314,181 @@ int main(void)
 		
 		if(taster_grun>0)
 		{
-			y_recht++;
+			x_recht++;
 			taster_grun=0;
 			
-			if(y_recht>68)
+			if(x_recht>68)
 			{
-				y_recht=68;
+				x_recht=68;
 			}
 		}
 		
 		if(taster_rot>0)
 		{
-			y_recht--;
+			x_recht--;
 			taster_rot=0;
 			
-			if(y_recht<1)
+			if(x_recht<1)
 			{
-				y_recht=1;
+				x_recht=1;
 			}
 		}
 		
 		
-		glcd_fill_rect(y_recht, x_recht, 16, 2, BLACK);
-		
-		if(richtung==0)
-		{
-			glcd_fill_circle(y_ball, x_ball-1, 3, WHITE);
-		}
-		
-		if(richtung==1)
-		{
-			glcd_fill_circle(y_ball, x_ball+1, 3, WHITE);
-		}
+		glcd_fill_rect(x_recht, y_recht, 15, 2, BLACK);
 	
-//		glcd_draw_string_xy(0, 0, "Justin Rhyner");
+		glcd_draw_string_xy(1, 1, string);
 		
-		glcd_fill_circle(y_ball, x_ball, 3, BLACK);
+		if(y_richtung==DOWN)
+		{
+			glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
+		}
+		
+		if(y_richtung==UP)
+		{
+			glcd_fill_circle(x_ball, y_ball+1, 3, WHITE);
+		}
+		
+		if(x_richtung==LINKS)
+		{
+			glcd_fill_circle(x_ball+1, y_ball, 3, WHITE);
+		}
+		
+		if(x_richtung==RECHTS)
+		{
+			glcd_fill_circle(x_ball-1, y_ball, 3, WHITE);
+		}
+		
+		glcd_fill_circle(x_ball, y_ball, 3, BLACK);
 		
 		glcd_draw_rect(0, 0, 84, 48, BLACK);
 		
 		
+			
+		/*	if(y_ball==42)
+			{
+				speed_y=4;
+				speed_x=0;
+				y_richtung=UP; 
+			}*/
+			
+	
+			if((y_ball==42) && (x_ball>x_recht) && (x_ball<x_recht+15))
+			{
+				if((x_ball>x_recht) && (x_ball<x_recht+5))
+				{
+					speed_x=6;
+					x_richtung=LINKS;
+				}
+				
+				if((x_ball>x_recht+5) && (x_ball<x_recht+10))
+				{
+					speed_x=0;			
+				}
+				
+				if((x_ball>x_recht+10) && (x_ball<x_recht+15))
+				{
+					speed_x=6;
+					x_richtung=RECHTS;
+				}
+				
+				y_richtung=UP;
+			}
+			
+			if(x_ball==3)
+				{
+					x_richtung=RECHTS;
+				}
+				
+				if(x_ball==81)
+				{
+					x_richtung=LINKS;
+				}
+				
+				
+				
+			if(y_ball==3)
+			{
+				x_richtung=x_richtung;
+				y_richtung=DOWN;
+			}
+				
+				
+			
+	/*		if(x_ball==81) 
+			{
+				richtung=1;
+				
+				if(y_ball==3)
+				{
+					richtung=4;
+				}
+			}
+			
+			if(x_ball==3) 
+			{
+				richtung=3;
+				
+				if(y_ball==3)
+				{
+					richtung=5;
+				}
+			}
+			
+			
+			
+			if(richtung==0)
+			{
+				glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
+			}
+			
+			if(richtung==1)
+			{
+				glcd_fill_circle(x_ball+1, y_ball+1, 3, WHITE);
+			}
+			
+			if(richtung==2)
+			{
+				glcd_fill_circle(x_ball, y_ball+1, 3, WHITE);
+			}
+			
+			if(richtung==3)
+			{
+				glcd_fill_circle(x_ball-1, y_ball+1, 3, WHITE);
+			}
+			
+			if(richtung==4)
+			{
+				glcd_fill_circle(x_ball+1, y_ball-1, 3, WHITE);
+			}
+			
+			if(richtung==5)
+			{
+				glcd_fill_circle(x_ball-1, y_ball-1, 3, WHITE);
+			}
+			
+			*/
+			
+			if(y_ball==47)
+			{
+				if((x_ball<x_recht) || (x_ball>x_recht+15))
+				{
+					beginn=1;
+					score++;
+				}
+			}
+			
+		
+			if(beginn==1)
+			{
+				glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
+				y_ball=0;
+				beginn=0;
+				speed_x=0;
+			}
+	
+		
+		sprintf(string,"%d", score);
 		
 		glcd_write();
 	}//End of while
