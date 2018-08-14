@@ -19,8 +19,8 @@
 #include <util/delay.h>
 
 
-#define TASTER_R !(PIND&(1<<PD6)) && (entprell=0)
-#define TASTER_G !(PIND&(1<<PD5)) && (entprell=0)
+#define TASTER_R !(PIND&(1<<PD6)) && (entprell==0)
+#define TASTER_G !(PIND&(1<<PD5)) && (entprell==0)
 #define F_CPU 16000000UL  // 1 MHz
 
 /* Function prototypes */
@@ -76,18 +76,16 @@ ISR(TIMER0_OVF_vect)
 		kreis=0;
 	}
 	
-	if(ISR_zaehler==12)
-	{
-		ISR_ms_100++; //milisekunden hochrechnen
-		
-		
-		if(ISR_ms_100==10)
-		
-		if(entprell!=0)
+	if(entprell!=0)
 		{
 			entprell--;
 		}
+	
+	if(ISR_zaehler==12)
+	{
+		ISR_ms_100++; //100 milisekunden hochrechnen
 		
+		if(ISR_ms_100==10)
 		{
 			sek++; //sekunden hochrechnen
 			ISR_sek++;
@@ -182,56 +180,56 @@ const unsigned char batman[] PROGMEM=
 	0x00, 0x00, 0x00, 0x00
 	};
 	
-	uint8_t taster(uint8_t tast_nr) // Flankenerkennung
+uint8_t taster(uint8_t tast_nr) // Flankenerkennung
 {
-	static uint8_t pegelr=0;		//Variabeln initialisieren
-	static uint8_t pegelaltr=0;
 	static uint8_t pegelg=0;		//Variabeln initialisieren
 	static uint8_t pegelaltg=0;
+	static uint8_t pegelr=0;
+	static uint8_t pegelaltr=0;
 	uint8_t rueckgabe=0;
-	
-	
-	if(TASTER_R) //taster gedrückt
+
+	switch(tast_nr)
 	{
-		pegelr=1;
-			
-		if(pegelaltr==0)
-		{
-			rueckgabe=1;
-		}
-		
-		entprell=10;
+		case 1: 	if(TASTER_R) //taster gedrückt
+					{
+						pegelr=1;
+						
+						if(pegelaltr==0)
+						{
+							rueckgabe=1;
+						}
+					}
+					else
+					{
+						pegelr=0;
+						rueckgabe=0;
+					}
+						
+						
+						
+					pegelaltr=pegelr;
+					break;
+					
+		case 2:		if(TASTER_G) //taster gedrückt
+					{
+						pegelg=1;
+						
+						if(pegelaltg==0)
+						{
+							rueckgabe=1;
+						}
+					}
+					else
+					{
+						pegelg=0;
+						rueckgabe=0;
+					}
+						
+						
+						
+					pegelaltg=pegelg; // Beide Pegel gleichsetzen
+					break;
 	}
-	
-	else
-	{
-		pegelr=0;
-		rueckgabe=0;
-	}
-	
-	if(TASTER_G) //taster gedrückt
-	{
-		pegelg=1;
-			
-		if(pegelaltg==0)
-		{
-			rueckgabe=1;
-		}
-		
-		entprell=10;
-	}
-	
-	else
-	{
-		pegelg=0;
-		rueckgabe=0;
-	}
-	
-	
-	
-	pegelaltg=pegelg; // Beide Pegel gleichsetzen
-	
-	
 	return rueckgabe; //rueckgabe wird zurückgegeben
 }
 
@@ -284,27 +282,41 @@ int main(void)
 	{
 		glcd_fill_rect(y_recht, x_recht, 16, 2, WHITE);
 		
-		if(!(PIND&(1<<PD5)))
+		if(TASTER_G)
 		{
 			taster_grun++;
+			entprell=2;
+
 		}
 		
-		if(!(PIND&(1<<PD6)))
+		if(TASTER_R)
 		{
 			taster_rot++;
+			entprell=2;
+
 		}
 		
 		
-		if(taster_grun==1)
+		if(taster_grun>0)
 		{
 			y_recht++;
 			taster_grun=0;
+			
+			if(y_recht>68)
+			{
+				y_recht=68;
+			}
 		}
 		
-		if(taster_rot==1)
+		if(taster_rot>0)
 		{
 			y_recht--;
 			taster_rot=0;
+			
+			if(y_recht<1)
+			{
+				y_recht=1;
+			}
 		}
 		
 		
