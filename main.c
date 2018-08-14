@@ -30,12 +30,14 @@ volatile uint8_t sek=0;
 volatile uint8_t min=0;
 volatile uint8_t h=0;
 uint8_t x_ball=3;
+uint8_t y_ball=42;
 uint8_t x_recht=45;
 uint8_t y_recht=34;
 uint8_t richtung=0;
 uint8_t taster_rot=0;
 uint8_t taster_grun=0;
-int8_t entprell=0;
+uint8_t entprell=0;
+uint8_t beginn=0;
 
 ISR(TIMER0_OVF_vect)
 {
@@ -49,18 +51,25 @@ ISR(TIMER0_OVF_vect)
 	TCNT0 = 0;
 	ISR_zaehler++;//zähler hochrechnen
 	kreis++;
-	if(kreis==5)	
+	if(kreis==4)	
 	{
 		if(x_ball==3)
 		{
 			richtung=0;
 		}
 		
-		if(x_ball==42)
+		if((x_ball==42) && (y_ball>y_recht) && (y_ball<y_recht+16))
 		{
 			richtung=1;
 		}
 		
+		if(x_ball==47)
+		{
+			if((y_ball<y_recht) || (y_ball>y_recht+16))
+			{
+				beginn=1;
+			}
+		}
 		
 	
 		if(richtung==0)
@@ -71,6 +80,13 @@ ISR(TIMER0_OVF_vect)
 		if(richtung==1)
 		{
 			x_ball--;
+		}
+		
+		if(beginn==1)
+		{
+			glcd_fill_circle(y_ball, x_ball-1, 3, WHITE);
+			x_ball=0;
+			beginn=0;
 		}
 		
 		kreis=0;
@@ -324,25 +340,19 @@ int main(void)
 		
 		if(richtung==0)
 		{
-			glcd_fill_circle(42, x_ball-1, 3, WHITE);
+			glcd_fill_circle(y_ball, x_ball-1, 3, WHITE);
 		}
 		
 		if(richtung==1)
 		{
-			glcd_fill_circle(42, x_ball+1, 3, WHITE);
+			glcd_fill_circle(y_ball, x_ball+1, 3, WHITE);
 		}
 	
 //		glcd_draw_string_xy(0, 0, "Justin Rhyner");
 		
-		glcd_fill_circle(42, x_ball, 3, BLACK);
+		glcd_fill_circle(y_ball, x_ball, 3, BLACK);
 		
 		glcd_draw_rect(0, 0, 84, 48, BLACK);
-		
-//		glcd_draw_line(83, 24, 0, 24, BLACK);
-		
-		
-		
-		
 		
 		
 		
