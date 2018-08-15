@@ -21,6 +21,7 @@
 
 #define TASTER_R !(PIND&(1<<PD6)) && (entprell==0)
 #define TASTER_G !(PIND&(1<<PD5)) && (entprell==0)
+#define TASTER_B !(PIND&(1<<PD2))
 #define F_CPU 16000000UL  // 1 MHz
 
 #define UP 0
@@ -44,9 +45,12 @@ uint8_t taster_rot=0;
 uint8_t taster_grun=0;
 uint8_t entprell=0;
 uint8_t beginn=0;
+uint8_t leben=3;
 uint8_t score=0;
 uint8_t speed_y=4;
 uint8_t speed_x=0;
+uint8_t refresh_balk=1;
+uint8_t refresh_ball=0;
 
 char string[10]={};
 
@@ -251,6 +255,112 @@ uint8_t taster(uint8_t tast_nr) // Flankenerkennung
 
 
 
+
+
+
+
+void block_1(uint8_t x1, uint8_t y1)
+{
+	static uint8_t block1=1;
+	const uint8_t block_1x=10;
+	const uint8_t block_1y=1;
+	
+	if(block1==1)
+	{
+		if((y1==block_1y+3) && (x1>=block_1x) && (x1<=block_1x+16))
+		{
+			block1=0;
+			y_richtung=	DOWN;
+			glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
+			score++;
+		}
+	}
+}
+
+
+void block_2(uint8_t x2, uint8_t y2)
+{
+	static uint8_t block2=1;
+	const uint8_t block_2x=36;
+	const uint8_t block_2y=1;
+	
+	if(block2==1)
+	{
+		if((y2==block_2y+3) && (x2>=block_2x) && (x2<=block_2x+16))
+		{
+			block2=0;
+			y_richtung=	DOWN;
+			glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
+			score++;
+		}
+	}
+}
+
+
+void block_3(uint8_t x3, uint8_t y3)
+{
+	static uint8_t block3=1;
+	const uint8_t block_3x=68;
+	const uint8_t block_3y=1;
+	
+	if(block3==1)
+	{
+		if((y3==block_3y+3) && (x3>=block_3x) && (x3<=block_3x+16))
+		{
+			block3=0;
+			y_richtung=	DOWN;
+			glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
+			score++;
+		}
+	}
+}
+
+
+void block_4(uint8_t x4, uint8_t y4)
+{
+	static uint8_t block4=1;
+	const uint8_t block_4x=18;
+	const uint8_t block_4y=7;
+	
+	if(block4==1)
+	{
+		if((y4==block_4y+3) && (x4>=block_4x) && (x4<=block_4x+16))
+		{
+			block4=0;
+			y_richtung=	DOWN;
+			glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
+			score++;
+		}
+	}
+}
+
+
+void block_5(uint8_t x5, uint8_t y5)
+{
+	static uint8_t block5=1;
+	const uint8_t block_5x=44;
+	const uint8_t block_5y=7;
+	
+	if(block5==1)
+	{
+		if((y5==block_5y+3) && (x5>=block_5x) && (x5<=block_5x+16))
+		{
+			block5=0;
+			y_richtung=	DOWN;
+			glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
+			score++;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
 	
 	
 int main(void)
@@ -277,6 +387,9 @@ int main(void)
 	
 	DDRD &= ~(1<<PD6);
 	PORTD |= (1<<PD6);
+	
+	DDRD |= (1<<PD4);
+	PORTD |= (1<<PD4);
 
     sei();
     // enable interrupts
@@ -293,11 +406,27 @@ int main(void)
 	glcd_clear_buffer();
 	
 	
+	
+	
+	
+	
+	
+	
+	glcd_fill_rect(10, 1, 16, 5, BLACK);
+	glcd_fill_rect(36, 1, 16, 5, BLACK);
+	glcd_fill_rect(68, 1, 16, 5, BLACK);
+	
+	glcd_fill_rect(18, 7, 16, 5, BLACK);
+	glcd_fill_rect(44, 7, 16, 5, BLACK);
+
+
+
+	
 	while(1) 
 	{
-		glcd_fill_rect(x_recht, y_recht, 16, 2, WHITE);
 		
-		if(TASTER_G)
+		
+		if(TASTER_G)													//Anfang Taster abfragen
 		{
 			taster_grun++;
 			entprell=2;
@@ -309,13 +438,13 @@ int main(void)
 			taster_rot++;
 			entprell=2;
 
-		}
+		}																//Ende Taster Abfragen
 		
 		
-		if(taster_grun>0)
+		if(taster_grun>0)												//Anfang Tasteraktion bestimmen
 		{
+			refresh_balk=1;
 			x_recht++;
-			taster_grun=0;
 			
 			if(x_recht>68)
 			{
@@ -325,29 +454,79 @@ int main(void)
 		
 		if(taster_rot>0)
 		{
+			refresh_balk=1;
 			x_recht--;
-			taster_rot=0;
 			
 			if(x_recht<1)
 			{
 				x_recht=1;
 			}
+		}																//Ende Tasteraktion bestimmen
+		
+
+		if(x_ball==3)													//Anfang Ballrichtung Festlegen / Anfang Ball
+		{
+			x_richtung=RECHTS;
 		}
+				
+		if(x_ball==81)
+		{
+			x_richtung=LINKS;
+		}
+				
+			if(y_ball==3)
+			{
+				x_richtung=x_richtung;
+				y_richtung=DOWN;
+			}
+			
+			if((y_ball==42) && (x_ball>x_recht) && (x_ball<x_recht+16))
+			{
+				
+			if((x_ball>x_recht) && (x_ball<x_recht+4))
+			{
+				speed_x=4;
+				speed_y=7;
+				x_richtung=LINKS;
+			}
+				
+			if((x_ball>x_recht+4) && (x_ball<x_recht+8))
+			{
+				speed_x=6;
+				x_richtung=LINKS;
+			}
+				
+			if((x_ball>x_recht+8) && (x_ball<x_recht+12))
+			{
+				speed_x=6;
+				x_richtung=RECHTS;
+			}
+				
+			if((x_ball>x_recht+12) && (x_ball<x_recht+16))
+			{
+				speed_x=4;
+				speed_y=7;
+				x_richtung=RECHTS;
+			}
+					
+				y_richtung=UP;
+		}															//Ende Ballrichtung festlegen
+			
+			
+			
 		
 		
-		glcd_fill_rect(x_recht, y_recht, 15, 2, BLACK);
-	
-		glcd_draw_string_xy(1, 1, string);
-		
-		if(y_richtung==DOWN)
+		if((y_richtung==DOWN) && (y_ball!=42))							//Anfang Ball schreiben
 		{
 			glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
 		}
 		
-		if(y_richtung==UP)
+		
+		if((y_richtung==UP) && (y_ball!=42))
 		{
 			glcd_fill_circle(x_ball, y_ball+1, 3, WHITE);
 		}
+		
 		
 		if(x_richtung==LINKS)
 		{
@@ -359,125 +538,24 @@ int main(void)
 			glcd_fill_circle(x_ball-1, y_ball, 3, WHITE);
 		}
 		
-		glcd_fill_circle(x_ball, y_ball, 3, BLACK);
-		
-		glcd_draw_rect(0, 0, 84, 48, BLACK);
+		glcd_fill_circle(x_ball, y_ball, 3, BLACK);						//Ende Ball schreiben
 		
 		
-			
-		/*	if(y_ball==42)
+		
+		
+		
+		if(y_ball==47)
+		{
+			beginn=1;
+			leben--;
+		
+			if(score==0)
 			{
-				speed_y=4;
-				speed_x=0;
-				y_richtung=UP; 
-			}*/
-			
-	
-			if((y_ball==42) && (x_ball>x_recht) && (x_ball<x_recht+15))
-			{
-				if((x_ball>x_recht) && (x_ball<x_recht+5))
-				{
-					speed_x=6;
-					x_richtung=LINKS;
-				}
-				
-				if((x_ball>x_recht+5) && (x_ball<x_recht+10))
-				{
-					speed_x=0;			
-				}
-				
-				if((x_ball>x_recht+10) && (x_ball<x_recht+15))
-				{
-					speed_x=6;
-					x_richtung=RECHTS;
-				}
-				
-				y_richtung=UP;
+//				glcd_draw_string_xy(20, 24, "GAME OVER");
+				score=3;
 			}
-			
-			if(x_ball==3)
-				{
-					x_richtung=RECHTS;
-				}
-				
-				if(x_ball==81)
-				{
-					x_richtung=LINKS;
-				}
-				
-				
-				
-			if(y_ball==3)
-			{
-				x_richtung=x_richtung;
-				y_richtung=DOWN;
-			}
-				
-				
-			
-	/*		if(x_ball==81) 
-			{
-				richtung=1;
-				
-				if(y_ball==3)
-				{
-					richtung=4;
-				}
-			}
-			
-			if(x_ball==3) 
-			{
-				richtung=3;
-				
-				if(y_ball==3)
-				{
-					richtung=5;
-				}
-			}
-			
-			
-			
-			if(richtung==0)
-			{
-				glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
-			}
-			
-			if(richtung==1)
-			{
-				glcd_fill_circle(x_ball+1, y_ball+1, 3, WHITE);
-			}
-			
-			if(richtung==2)
-			{
-				glcd_fill_circle(x_ball, y_ball+1, 3, WHITE);
-			}
-			
-			if(richtung==3)
-			{
-				glcd_fill_circle(x_ball-1, y_ball+1, 3, WHITE);
-			}
-			
-			if(richtung==4)
-			{
-				glcd_fill_circle(x_ball+1, y_ball-1, 3, WHITE);
-			}
-			
-			if(richtung==5)
-			{
-				glcd_fill_circle(x_ball-1, y_ball-1, 3, WHITE);
-			}
-			
-			*/
-			
-			if(y_ball==47)
-			{
-				if((x_ball<x_recht) || (x_ball>x_recht+15))
-				{
-					beginn=1;
-					score++;
-				}
-			}
-			
+		}
+		
 		
 			if(beginn==1)
 			{
@@ -485,12 +563,62 @@ int main(void)
 				y_ball=0;
 				beginn=0;
 				speed_x=0;
+			}															
+			
+			if(y_ball>=41)
+			{
+				refresh_balk=1;
+			}															//Ende Ball
+			
+			
+			
+			block_1(x_ball, y_ball);
+			block_2(x_ball, y_ball);
+			block_3(x_ball, y_ball);
+			block_4(x_ball, y_ball);
+			block_5(x_ball, y_ball);
+			
+			
+			
+		if(refresh_balk==1)												//Anfang Balkenbewegungsabfrage
+		{
+			if(taster_grun>0)
+			{
+				glcd_fill_rect(x_recht-1, y_recht, 16, 2, WHITE);
 			}
+			
+			if(taster_rot>0)
+			{
+				glcd_fill_rect(x_recht+1, y_recht, 16, 2, WHITE);
+			}
+			
+			else
+			{
+				glcd_fill_rect(x_recht-1, y_recht, 16, 2, WHITE);
+			}
+			
+			glcd_fill_rect(x_recht, y_recht, 16, 2, BLACK);
+			
+//			glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
+			taster_grun=0;
+			taster_rot=0;
+			refresh_balk=0;
+		}					 											//Ende Balkenbewegungsabfrage
 	
+	
+		if(y_ball>=41)
+			{
+				refresh_balk=1;
+			}
 		
-		sprintf(string,"%d", score);
+		sprintf(string,"%d", leben);
+		glcd_draw_string_xy(1, 1, string);
 		
 		glcd_write();
+		
+		
+		PORTD ^= (1<<PD4);
+		
 	}//End of while
 	
 	//---------------------------------------------
