@@ -600,13 +600,6 @@ void block_6(uint8_t x6, uint8_t y6)
 		}
 	}
 }
-
-
-
-
-
-
-	
 	
 int main(void)
 {	
@@ -663,11 +656,11 @@ int main(void)
 		
 		if(TASTER_B)													//Anfang Taster abfragen
 		{
+			glcd_fill_rect(15, 21, 54, 7, WHITE);
 			taster_blau=1;
 			entprell=2;
 			refresh_ball=1;
 			speed_y=4;
-			
 		}
 		
 		if(TASTER_G)													//Anfang Taster abfragen
@@ -712,6 +705,7 @@ int main(void)
 	{	
 		if(start==0)
 		{
+			
 			refresh_ball=1;
 			refresh_balk=1;
 			start=1;
@@ -722,7 +716,7 @@ int main(void)
 	}
 
 
-if(win==0)
+	if(win==0)
 		{
 			x0=3;
 			x1=5;
@@ -738,7 +732,6 @@ if(win==0)
 			y3_1=6;
 			y3=5;
 			y4=8;
-			
 		}
 
 	if(win==1)
@@ -960,6 +953,8 @@ if(win==0)
 			ball_neu.posx=42;
 			ball_neu.posy=42;
 			win=0;
+			glcd_draw_string_xy(15, 21, "GAME OVER");
+
 			
 		}
 		
@@ -982,6 +977,7 @@ if(win==0)
 			
 			if(win==5)
 			{
+				glcd_draw_string_xy(25, 21, "FINISH");
 				win=0;
 			}
 		
