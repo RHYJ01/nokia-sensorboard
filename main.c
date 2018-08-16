@@ -46,7 +46,7 @@ uint8_t entprell=0;
 uint8_t beginn=0;
 uint8_t leben=3;
 uint8_t score=0;
-uint8_t speed_y=4;
+uint8_t speed_y=0;
 uint8_t speed_x=0;
 uint8_t refresh_balk=1;
 uint8_t refresh_ball=0;
@@ -55,12 +55,29 @@ uint8_t block2=1;
 uint8_t block3=1;
 uint8_t block4=1;
 uint8_t block5=1;
+uint8_t block6=1;
 uint8_t schreiben1=0;
 uint8_t schreiben2=0;
 uint8_t schreiben3=0;
 uint8_t schreiben4=0;
 uint8_t schreiben5=0;
+uint8_t schreiben6=0;
 uint8_t start=0;
+uint8_t x0=4;
+uint8_t x1=4;
+uint8_t x2=4;
+uint8_t x2_1=4;
+uint8_t x3_1=4;
+uint8_t x3=4;
+uint8_t x4=4;
+uint8_t y0=4;
+uint8_t y1=4;
+uint8_t y2=4;
+uint8_t y2_1=4;
+uint8_t y3_1=4;
+uint8_t y3=4;
+uint8_t y4=4;
+uint8_t win=0;
 
 struct balls
 {
@@ -307,7 +324,7 @@ void block_1(uint8_t x1, uint8_t y1)
 			block1=0;
 			y_richtung=	DOWN;
 			glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
-			score++;
+			score+1;
 		}
 	}
 }
@@ -332,7 +349,7 @@ void block_2(uint8_t x2, uint8_t y2)
 			block2=0;
 			y_richtung=	DOWN;
 			glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
-			score++;
+			score+1;
 		}
 	}
 }
@@ -340,13 +357,13 @@ void block_2(uint8_t x2, uint8_t y2)
 
 void block_3(uint8_t x3, uint8_t y3)
 {
-	const static uint8_t block_3x=68;
+	const static uint8_t block_3x=62;
 	const static uint8_t block_3y=1;
 	
 	if(schreiben3==0)
 	{ 
 		schreiben3=1;
-		glcd_fill_rect(68, 1, 16, 5, BLACK);
+		glcd_fill_rect(62, 1, 16, 5, BLACK);
 		block3=1;
 	}
 	
@@ -357,7 +374,7 @@ void block_3(uint8_t x3, uint8_t y3)
 			block3=0;
 			y_richtung=	DOWN;
 			glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
-			score++;
+			score+1;
 		}
 	}
 }
@@ -382,7 +399,7 @@ void block_4(uint8_t x4, uint8_t y4)
 			block4=0;
 			y_richtung=	DOWN;
 			glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
-			score++;
+			score+1;
 		}
 	}
 }
@@ -390,13 +407,13 @@ void block_4(uint8_t x4, uint8_t y4)
 
 void block_5(uint8_t x5, uint8_t y5)
 {
-	const static uint8_t block_5x=44;
+	const static uint8_t block_5x=54;
 	const static uint8_t block_5y=7;
 	
 	if(schreiben5==0)
 	{ 
 		schreiben5=1;
-		glcd_fill_rect(44, 7, 16, 5, BLACK);
+		glcd_fill_rect(54, 7, 16, 5, BLACK);
 		block5=1;
 	}
 	
@@ -407,13 +424,35 @@ void block_5(uint8_t x5, uint8_t y5)
 			block5=0;
 			y_richtung=	DOWN;
 			glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
-			score++;
+			score+1;
 		}
 	}
 }
 
 
-
+void block_6(uint8_t x6, uint8_t y6)
+{
+	const static uint8_t block_6x=36;
+	const static uint8_t block_6y=7;
+	
+	if(schreiben6==0)
+	{ 
+		schreiben6=1;
+		glcd_fill_rect(36, 7, 16, 5, BLACK);
+		block6=1;
+	}
+	
+	if(block6==1)
+	{
+		if((y6==block_6y+3) && (x6>=block_6x) && (x6<=block_6x+16))
+		{
+			block6=0;
+			y_richtung=	DOWN;
+			glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
+			score+1;
+		}
+	}
+}
 
 
 
@@ -470,6 +509,7 @@ int main(void)
 	
 	ball_neu.posx=42;
 	ball_neu.posy=42;
+	y_richtung=UP;
 	
 	while(1) 
 	{
@@ -479,6 +519,7 @@ int main(void)
 			taster_blau=1;
 			entprell=2;
 			refresh_ball=1;
+			speed_y=4;
 			
 		}
 		
@@ -528,56 +569,178 @@ int main(void)
 			refresh_balk=1;
 			start=1;
 		}
-		
 		ball_neu=ball_alt;
-		
 		ball_neu.posy=42;
 		ball_neu.posx=x_recht+8;
-		
 	}
 
-		if(ball_neu.posx==3)													//Anfang Ballrichtung Festlegen / Anfang Ball
+
+if(win==0)
+		{
+			x0=3;
+			x1=5;
+			x2=7;
+			x2_1=8;
+			x3_1=8;
+			x3=7;
+			x4=5;
+			y0=15;
+			y1=8;
+			y2=5;
+			y2_1=6;
+			y3_1=6;
+			y3=5;
+			y4=8;
+			
+		}
+
+	if(win==1)
+		{
+			x0=2;
+			x1=4;
+			x2=6;
+			x2_1=7;
+			x3_1=7;
+			x3=6;
+			x4=4;
+			y0=14;
+			y1=7;
+			y2=4;
+			y2_1=5;
+			y3_1=5;
+			y3=4;
+			y4=7;
+		}
+		
+		if(win==2)
+		{
+			x0=2;
+			x1=3;
+			x2=5;
+			x2_1=6;
+			x3_1=6;
+			x3=5;
+			x4=3;
+			y0=13;
+			y1=6;
+			y2=3;
+			y2_1=4;
+			y3_1=4;
+			y3=3;
+			y4=6;
+		}
+		
+		if(win==3)
+		{
+			x0=1;
+			x1=2;
+			x2=4;
+			x2_1=5;
+			x3_1=5;
+			x3=4;
+			x4=2;
+			y0=12;
+			y1=5;
+			y2=2;
+			y2_1=3;
+			y3_1=3;
+			y3=2;
+			y4=5;
+		}									
+		
+		if(win==4)
+		{
+			x0=1;
+			x1=2;
+			x2=2;
+			x2_1=2;
+			x3_1=2;
+			x3=2;
+			x4=1;
+			y0=20;
+			y1=2;
+			y2=1;
+			y2_1=2;
+			y3_1=2;
+			y3=1;
+			y4=20;
+		}		
+		
+
+		if(ball_neu.posx==3)											//Anfang Ballrichtung Festlegen / Anfang Ball
 		{
 			x_richtung=RECHTS;
+			score+1;
 		}
 				
 		if(ball_neu.posx==81)
 		{
 			x_richtung=LINKS;
+			score+1;
 		}
 				
-			if(ball_neu.posy==3)
-			{
-				x_richtung=x_richtung;
-				y_richtung=DOWN;
-			}
-			
-			
-		if((ball_neu.posy==42) && (ball_neu.posx>x_recht) && (ball_neu.posx<x_recht+16))
+		if(ball_neu.posy==3)
 		{
+			x_richtung=x_richtung;
+			y_richtung=DOWN;
+		}
+			
+			
+		if((ball_neu.posy==42) && (ball_neu.posx>x_recht-3) && (ball_neu.posx<x_recht+19))
+		{
+				if((ball_neu.posx>x_recht-3) && (ball_neu.posx<x_recht))
+				{
+					speed_x=x0;
+					speed_y=y0;
+					x_richtung=LINKS;
+				}
+			
 				if((ball_neu.posx>x_recht) && (ball_neu.posx<x_recht+4))
 				{
-					speed_x=4;
-					speed_y=7;
+					speed_x=x1;
+					speed_y=y1;
+					x_richtung=LINKS;
+				}
+				
+				if((ball_neu.posx>x_recht+4) && (ball_neu.posx<x_recht+6))
+				{
+					speed_x=x2;
+					speed_y=y2;
 					x_richtung=LINKS;
 				}
 					
-				if((ball_neu.posx>x_recht+4) && (ball_neu.posx<x_recht+8))
+				if((ball_neu.posx>x_recht+6) && (ball_neu.posx<x_recht+8))
 				{
-					speed_x=6;
+					speed_x=x2_1;
+					speed_y=y2_1;
 					x_richtung=LINKS;
 				}
 					
-				if((ball_neu.posx>x_recht+8) && (ball_neu.posx<x_recht+12))
+				if((ball_neu.posx>x_recht+8) && (ball_neu.posx<x_recht+10))
 				{
-					speed_x=6;
+					speed_x=x3_1;
+					speed_y=y3_1;
+					x_richtung=RECHTS;
+				}
+					
+				if((ball_neu.posx>x_recht+10) && (ball_neu.posx<x_recht+12))
+				{
+					speed_x=x3;
+					speed_y=y3;
 					x_richtung=RECHTS;
 				}
 					
 				if((ball_neu.posx>x_recht+12) && (ball_neu.posx<x_recht+16))
 				{
-					speed_x=4;
-					speed_y=7;
+					speed_x=x4;
+					speed_y=y4;
+					x_richtung=RECHTS;
+				}
+				
+				if((ball_neu.posx>x_recht+16) && (ball_neu.posx<x_recht+19))
+				{
+					speed_x=x0;
+					speed_y=y0;
 					x_richtung=RECHTS;
 				}
 						
@@ -604,11 +767,11 @@ int main(void)
 			beginn=1;
 			leben--;
 		
-			if(score==0)
-			{
+//			if(score==0)
+//			{
 //				glcd_draw_string_xy(20, 24, "GAME OVER");
-				score=3;
-			}
+//				score=3;
+//			}
 		}
 		
 		
@@ -623,40 +786,60 @@ int main(void)
 		if(ball_neu.posy>=41)
 		{
 			refresh_balk=1;
-		}															//Ende Ball
+		}																//Ende Ball
 			
 			
 			
-		block_1(ball_neu.posx, ball_neu.posy);									// Anfang Blöcke
+		block_1(ball_neu.posx, ball_neu.posy);							// Anfang Blöcke
 		block_2(ball_neu.posx, ball_neu.posy);
 		block_3(ball_neu.posx, ball_neu.posy);
 		block_4(ball_neu.posx, ball_neu.posy);
 		block_5(ball_neu.posx, ball_neu.posy);
+		block_6(ball_neu.posx, ball_neu.posy);
 		
+		
+		
+		if(leben==0)
+		{
+			start=0;
+			taster_blau=0;
+			schreiben1=0;
+			schreiben2=0;
+			schreiben3=0;
+			schreiben4=0;
+			schreiben5=0;
+			schreiben6=0;
+			leben=3;
+			ball_neu.posx=42;
+			ball_neu.posy=42;
+			win=0;
+			
+		}
 		
 		if((block1==0) && (block2==0) && (block3==0) && (block4==0) && (block5==0))
 		{
+			start=0;
+			taster_blau=0;
 			schreiben1=0;
 			schreiben2=0;
 			schreiben3=0;
 			schreiben4=0;
 			schreiben5=0;
+			schreiben6=0;
 			leben=3;
 			ball_neu.posx=42;
 			ball_neu.posy=42;
+			win++;
 		}
 			
-		if(leben==0)
-		{
-			schreiben1=0;
-			schreiben2=0;
-			schreiben3=0;
-			schreiben4=0;
-			schreiben5=0;
-			leben=3;
-			ball_neu.posx=42;
-			ball_neu.posy=42;
-		}
+			
+			if(win==5)
+			{
+				win=0;
+			}
+		
+
+			
 			
 		if(refresh_balk==1)												//Anfang Balkenbewegungsabfrage
 		{
