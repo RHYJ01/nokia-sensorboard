@@ -35,7 +35,7 @@ volatile uint8_t durchlauf_x=0;
 volatile uint8_t sek=0;
 volatile uint8_t min=0;
 volatile uint8_t h=0;
-uint8_t y_ball=3;
+uint8_t y_ball=42;
 uint8_t x_ball=42;
 uint8_t y_recht=45;
 uint8_t x_recht=34;
@@ -43,6 +43,7 @@ uint8_t x_richtung=0; //0=up/1=down
 uint8_t y_richtung=0; //0=l/1=r
 uint8_t taster_rot=0;
 uint8_t taster_grun=0;
+uint8_t taster_blau=0;
 uint8_t entprell=0;
 uint8_t beginn=0;
 uint8_t leben=3;
@@ -51,6 +52,16 @@ uint8_t speed_y=4;
 uint8_t speed_x=0;
 uint8_t refresh_balk=1;
 uint8_t refresh_ball=0;
+uint8_t block1=1;
+uint8_t block2=1;
+uint8_t block3=1;
+uint8_t block4=1;
+uint8_t block5=1;
+uint8_t schreiben1=0;
+uint8_t schreiben2=0;
+uint8_t schreiben3=0;
+uint8_t schreiben4=0;
+uint8_t schreiben5=0;
 
 char string[10]={};
 
@@ -261,12 +272,18 @@ uint8_t taster(uint8_t tast_nr) // Flankenerkennung
 
 void block_1(uint8_t x1, uint8_t y1)
 {
-	static uint8_t block1=1;
-	const uint8_t block_1x=10;
-	const uint8_t block_1y=1;
+	const static uint8_t block_1x=10;
+	const static uint8_t block_1y=1;
 	
+	if(schreiben1==0)
+		{ 
+			schreiben1=1;
+			glcd_fill_rect(10, 1, 16, 5, BLACK);
+			block1=1;
+		}
+		
 	if(block1==1)
-	{
+	{		
 		if((y1==block_1y+3) && (x1>=block_1x) && (x1<=block_1x+16))
 		{
 			block1=0;
@@ -280,9 +297,15 @@ void block_1(uint8_t x1, uint8_t y1)
 
 void block_2(uint8_t x2, uint8_t y2)
 {
-	static uint8_t block2=1;
-	const uint8_t block_2x=36;
-	const uint8_t block_2y=1;
+	const static uint8_t block_2x=36;
+	const static uint8_t block_2y=1;
+	
+	if(schreiben2==0)
+	{ 
+		schreiben2=1;
+		glcd_fill_rect(36, 1, 16, 5, BLACK);
+		block2=1;
+	}
 	
 	if(block2==1)
 	{
@@ -299,9 +322,15 @@ void block_2(uint8_t x2, uint8_t y2)
 
 void block_3(uint8_t x3, uint8_t y3)
 {
-	static uint8_t block3=1;
-	const uint8_t block_3x=68;
-	const uint8_t block_3y=1;
+	const static uint8_t block_3x=68;
+	const static uint8_t block_3y=1;
+	
+	if(schreiben3==0)
+	{ 
+		schreiben3=1;
+		glcd_fill_rect(68, 1, 16, 5, BLACK);
+		block3=1;
+	}
 	
 	if(block3==1)
 	{
@@ -318,9 +347,15 @@ void block_3(uint8_t x3, uint8_t y3)
 
 void block_4(uint8_t x4, uint8_t y4)
 {
-	static uint8_t block4=1;
-	const uint8_t block_4x=18;
-	const uint8_t block_4y=7;
+	const static uint8_t block_4x=18;
+	const static uint8_t block_4y=7;
+	
+	if(schreiben4==0)
+	{ 
+		schreiben4=1;
+		glcd_fill_rect(18, 7, 16, 5, BLACK);
+		block4=1;
+	}
 	
 	if(block4==1)
 	{
@@ -337,9 +372,15 @@ void block_4(uint8_t x4, uint8_t y4)
 
 void block_5(uint8_t x5, uint8_t y5)
 {
-	static uint8_t block5=1;
-	const uint8_t block_5x=44;
-	const uint8_t block_5y=7;
+	const static uint8_t block_5x=44;
+	const static uint8_t block_5y=7;
+	
+	if(schreiben5==0)
+	{ 
+		schreiben5=1;
+		glcd_fill_rect(44, 7, 16, 5, BLACK);
+		block5=1;
+	}
 	
 	if(block5==1)
 	{
@@ -408,23 +449,15 @@ int main(void)
 	
 	
 	
-	
-	
-	
-	
-	glcd_fill_rect(10, 1, 16, 5, BLACK);
-	glcd_fill_rect(36, 1, 16, 5, BLACK);
-	glcd_fill_rect(68, 1, 16, 5, BLACK);
-	
-	glcd_fill_rect(18, 7, 16, 5, BLACK);
-	glcd_fill_rect(44, 7, 16, 5, BLACK);
-
-
-
-	
 	while(1) 
 	{
 		
+//		if(TASTER_B)													//Anfang Taster abfragen
+//		{
+//			taster_blau=1;
+//			entprell=2;
+
+//		}
 		
 		if(TASTER_G)													//Anfang Taster abfragen
 		{
@@ -462,6 +495,9 @@ int main(void)
 				x_recht=1;
 			}
 		}																//Ende Tasteraktion bestimmen
+		
+		
+		
 		
 
 		if(x_ball==3)													//Anfang Ballrichtung Festlegen / Anfang Ball
@@ -557,28 +593,51 @@ int main(void)
 		}
 		
 		
-			if(beginn==1)
-			{
-				glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
-				y_ball=0;
-				beginn=0;
-				speed_x=0;
-			}															
+		if(beginn==1)
+		{
+			glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
+			y_ball=0;
+			beginn=0;
+			speed_x=0;
+		}															
 			
-			if(y_ball>=41)
-			{
-				refresh_balk=1;
-			}															//Ende Ball
-			
-			
-			
-			block_1(x_ball, y_ball);
-			block_2(x_ball, y_ball);
-			block_3(x_ball, y_ball);
-			block_4(x_ball, y_ball);
-			block_5(x_ball, y_ball);
+		if(y_ball>=41)
+		{
+			refresh_balk=1;
+		}															//Ende Ball
 			
 			
+			
+		block_1(x_ball, y_ball);									// Anfang Blöcke
+		block_2(x_ball, y_ball);
+		block_3(x_ball, y_ball);
+		block_4(x_ball, y_ball);
+		block_5(x_ball, y_ball);
+		
+		
+		if((block1==0) && (block2==0) && (block3==0) && (block4==0) && (block5==0))
+		{
+			schreiben1=0;
+			schreiben2=0;
+			schreiben3=0;
+			schreiben4=0;
+			schreiben5=0;
+			leben=3;
+			x_ball=42;
+			y_ball=42;
+		}
+			
+		if(leben==0)
+		{
+			schreiben1=0;
+			schreiben2=0;
+			schreiben3=0;
+			schreiben4=0;
+			schreiben5=0;
+			leben=3;
+			x_ball=42;
+			y_ball=42;
+		}
 			
 		if(refresh_balk==1)												//Anfang Balkenbewegungsabfrage
 		{
@@ -604,6 +663,7 @@ int main(void)
 			taster_rot=0;
 			refresh_balk=0;
 		}					 											//Ende Balkenbewegungsabfrage
+	
 	
 	
 		if(y_ball>=41)
