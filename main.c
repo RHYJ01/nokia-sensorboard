@@ -21,7 +21,7 @@
 
 #define TASTER_R !(PIND&(1<<PD6)) && (entprell==0)
 #define TASTER_G !(PIND&(1<<PD5)) && (entprell==0)
-#define TASTER_B !(PIND&(1<<PD2))
+#define TASTER_B !(PIND&(1<<PD2)) && (entprell==0)
 #define F_CPU 16000000UL  // 1 MHz
 
 #define UP 0
@@ -35,8 +35,6 @@ volatile uint8_t durchlauf_x=0;
 volatile uint8_t sek=0;
 volatile uint8_t min=0;
 volatile uint8_t h=0;
-uint8_t y_ball=42;
-uint8_t x_ball=42;
 uint8_t y_recht=45;
 uint8_t x_recht=34;
 uint8_t x_richtung=0; //0=up/1=down
@@ -62,6 +60,14 @@ uint8_t schreiben2=0;
 uint8_t schreiben3=0;
 uint8_t schreiben4=0;
 uint8_t schreiben5=0;
+uint8_t start=0;
+
+struct balls
+{
+	uint8_t posx;
+	uint8_t posy;
+}ball_neu, ball_alt;
+
 
 char string[10]={};
 
@@ -89,8 +95,14 @@ ISR(TIMER0_OVF_vect)
 			
 			if(y_richtung==UP)
 			{
-				y_ball--;
-			}else y_ball++;
+				ball_neu.posy--;
+				refresh_ball=1;
+			}
+			else 
+			{
+				ball_neu.posy++;
+				refresh_ball=1;
+			}
 	}
 	
 	if(durchlauf_x>=speed_x)	
@@ -100,8 +112,14 @@ ISR(TIMER0_OVF_vect)
 		{
 			if(x_richtung==LINKS)
 			{
-				x_ball--;
-			}else x_ball++;
+				ball_neu.posx--;
+				refresh_ball=1;
+			}
+			else 
+			{
+				ball_neu.posx++;
+				refresh_ball=1;
+			}
 		}
 	}
 	
@@ -429,6 +447,9 @@ int main(void)
 	DDRD &= ~(1<<PD6);
 	PORTD |= (1<<PD6);
 	
+	DDRD &= ~(1<<PD2);
+	PORTD |= (1<<PD2);
+	
 	DDRD |= (1<<PD4);
 	PORTD |= (1<<PD4);
 
@@ -447,17 +468,19 @@ int main(void)
 	glcd_clear_buffer();
 	
 	
-	
+	ball_neu.posx=42;
+	ball_neu.posy=42;
 	
 	while(1) 
 	{
 		
-//		if(TASTER_B)													//Anfang Taster abfragen
-//		{
-//			taster_blau=1;
-//			entprell=2;
-
-//		}
+		if(TASTER_B)													//Anfang Taster abfragen
+		{
+			taster_blau=1;
+			entprell=2;
+			refresh_ball=1;
+			
+		}
 		
 		if(TASTER_G)													//Anfang Taster abfragen
 		{
@@ -497,90 +520,86 @@ int main(void)
 		}																//Ende Tasteraktion bestimmen
 		
 		
+	if(taster_blau==0)
+	{	
+		if(start==0)
+		{
+			refresh_ball=1;
+			refresh_balk=1;
+			start=1;
+		}
 		
+		ball_neu=ball_alt;
 		
+		ball_neu.posy=42;
+		ball_neu.posx=x_recht+8;
+		
+	}
 
-		if(x_ball==3)													//Anfang Ballrichtung Festlegen / Anfang Ball
+		if(ball_neu.posx==3)													//Anfang Ballrichtung Festlegen / Anfang Ball
 		{
 			x_richtung=RECHTS;
 		}
 				
-		if(x_ball==81)
+		if(ball_neu.posx==81)
 		{
 			x_richtung=LINKS;
 		}
 				
-			if(y_ball==3)
+			if(ball_neu.posy==3)
 			{
 				x_richtung=x_richtung;
 				y_richtung=DOWN;
 			}
 			
-			if((y_ball==42) && (x_ball>x_recht) && (x_ball<x_recht+16))
-			{
-				
-			if((x_ball>x_recht) && (x_ball<x_recht+4))
-			{
-				speed_x=4;
-				speed_y=7;
-				x_richtung=LINKS;
-			}
-				
-			if((x_ball>x_recht+4) && (x_ball<x_recht+8))
-			{
-				speed_x=6;
-				x_richtung=LINKS;
-			}
-				
-			if((x_ball>x_recht+8) && (x_ball<x_recht+12))
-			{
-				speed_x=6;
-				x_richtung=RECHTS;
-			}
-				
-			if((x_ball>x_recht+12) && (x_ball<x_recht+16))
-			{
-				speed_x=4;
-				speed_y=7;
-				x_richtung=RECHTS;
-			}
+			
+		if((ball_neu.posy==42) && (ball_neu.posx>x_recht) && (ball_neu.posx<x_recht+16))
+		{
+				if((ball_neu.posx>x_recht) && (ball_neu.posx<x_recht+4))
+				{
+					speed_x=4;
+					speed_y=7;
+					x_richtung=LINKS;
+				}
 					
-				y_richtung=UP;
+				if((ball_neu.posx>x_recht+4) && (ball_neu.posx<x_recht+8))
+				{
+					speed_x=6;
+					x_richtung=LINKS;
+				}
+					
+				if((ball_neu.posx>x_recht+8) && (ball_neu.posx<x_recht+12))
+				{
+					speed_x=6;
+					x_richtung=RECHTS;
+				}
+					
+				if((ball_neu.posx>x_recht+12) && (ball_neu.posx<x_recht+16))
+				{
+					speed_x=4;
+					speed_y=7;
+					x_richtung=RECHTS;
+				}
+						
+					y_richtung=UP;
 		}															//Ende Ballrichtung festlegen
 			
 			
 			
 		
 		
-		if((y_richtung==DOWN) && (y_ball!=42))							//Anfang Ball schreiben
+		if(refresh_ball==1)
 		{
-			glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
+			refresh_ball=0;
+			glcd_fill_circle(ball_alt.posx, ball_alt.posy, 3, WHITE);
+			glcd_fill_circle(ball_neu.posx, ball_neu.posy, 3, BLACK);						//Ende Ball schreiben
+		
+			ball_alt=ball_neu;
 		}
 		
 		
-		if((y_richtung==UP) && (y_ball!=42))
-		{
-			glcd_fill_circle(x_ball, y_ball+1, 3, WHITE);
-		}
 		
-		
-		if(x_richtung==LINKS)
-		{
-			glcd_fill_circle(x_ball+1, y_ball, 3, WHITE);
-		}
-		
-		if(x_richtung==RECHTS)
-		{
-			glcd_fill_circle(x_ball-1, y_ball, 3, WHITE);
-		}
-		
-		glcd_fill_circle(x_ball, y_ball, 3, BLACK);						//Ende Ball schreiben
-		
-		
-		
-		
-		
-		if(y_ball==47)
+		if(ball_neu.posy==47)
 		{
 			beginn=1;
 			leben--;
@@ -595,24 +614,24 @@ int main(void)
 		
 		if(beginn==1)
 		{
-			glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
-			y_ball=0;
+			glcd_fill_circle(ball_alt.posx, ball_alt.posy, 3, WHITE);
+			ball_neu.posy=0;
 			beginn=0;
 			speed_x=0;
 		}															
 			
-		if(y_ball>=41)
+		if(ball_neu.posy>=41)
 		{
 			refresh_balk=1;
 		}															//Ende Ball
 			
 			
 			
-		block_1(x_ball, y_ball);									// Anfang Blöcke
-		block_2(x_ball, y_ball);
-		block_3(x_ball, y_ball);
-		block_4(x_ball, y_ball);
-		block_5(x_ball, y_ball);
+		block_1(ball_neu.posx, ball_neu.posy);									// Anfang Blöcke
+		block_2(ball_neu.posx, ball_neu.posy);
+		block_3(ball_neu.posx, ball_neu.posy);
+		block_4(ball_neu.posx, ball_neu.posy);
+		block_5(ball_neu.posx, ball_neu.posy);
 		
 		
 		if((block1==0) && (block2==0) && (block3==0) && (block4==0) && (block5==0))
@@ -623,8 +642,8 @@ int main(void)
 			schreiben4=0;
 			schreiben5=0;
 			leben=3;
-			x_ball=42;
-			y_ball=42;
+			ball_neu.posx=42;
+			ball_neu.posy=42;
 		}
 			
 		if(leben==0)
@@ -635,8 +654,8 @@ int main(void)
 			schreiben4=0;
 			schreiben5=0;
 			leben=3;
-			x_ball=42;
-			y_ball=42;
+			ball_neu.posx=42;
+			ball_neu.posy=42;
 		}
 			
 		if(refresh_balk==1)												//Anfang Balkenbewegungsabfrage
@@ -658,7 +677,7 @@ int main(void)
 			
 			glcd_fill_rect(x_recht, y_recht, 16, 2, BLACK);
 			
-//			glcd_fill_circle(x_ball, y_ball-1, 3, WHITE);
+//			glcd_fill_circle(ball_neu.posx, ball_neu.posy-1, 3, WHITE);
 			taster_grun=0;
 			taster_rot=0;
 			refresh_balk=0;
@@ -666,7 +685,7 @@ int main(void)
 	
 	
 	
-		if(y_ball>=41)
+		if(ball_neu.posy>=41)
 			{
 				refresh_balk=1;
 			}
@@ -678,7 +697,7 @@ int main(void)
 		
 		
 		PORTD ^= (1<<PD4);
-		
+
 	}//End of while
 	
 	//---------------------------------------------
