@@ -704,7 +704,6 @@ int main(void)
 		if(taster_rot>0)
 		{
 			refresh_balk=1;
-			refresh_ball=1;
 			x_recht--;
 			
 			if(x_recht<1)
@@ -725,7 +724,6 @@ int main(void)
 		ball_neu=ball_alt;
 		ball_neu.posy=42;
 		ball_neu.posx=x_recht+8;
-		refresh_ball=1;
 	}
 
 
