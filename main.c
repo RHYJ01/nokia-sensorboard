@@ -50,18 +50,18 @@ uint8_t speed_y=0;
 uint8_t speed_x=0;
 uint8_t refresh_balk=1;
 uint8_t refresh_ball=0;
-uint8_t block1=1;
-uint8_t block2=1;
-uint8_t block3=1;
-uint8_t block4=1;
-uint8_t block5=1;
-uint8_t block6=1;
-uint8_t schreiben1=0;
-uint8_t schreiben2=0;
-uint8_t schreiben3=0;
-uint8_t schreiben4=0;
-uint8_t schreiben5=0;
-uint8_t schreiben6=0;
+uint8_t block1=0;
+uint8_t block2=0;
+uint8_t block3=0;
+uint8_t block4=0;
+uint8_t block5=0;
+uint8_t block6=0;
+uint8_t schreiben1=1;
+uint8_t schreiben2=1;
+uint8_t schreiben3=1;
+uint8_t schreiben4=1;
+uint8_t schreiben5=1;
+uint8_t schreiben6=1;
 uint8_t start=0;
 uint8_t x0=4;
 uint8_t x1=4;
@@ -78,6 +78,13 @@ uint8_t y3_1=4;
 uint8_t y3=4;
 uint8_t y4=4;
 uint8_t win=0;
+uint8_t w0=0;
+uint8_t w1=0;
+uint8_t w2=0;
+uint8_t w3=0;
+uint8_t w4=0;
+uint8_t muster=0;
+uint8_t ende=0;
 
 struct balls
 {
@@ -304,303 +311,303 @@ uint8_t taster(uint8_t tast_nr) // Flankenerkennung
 
 
 
+	void block_1(uint8_t x1, uint8_t y1)
+	{
+		const static uint8_t block_1x=10;
+		const static uint8_t block_1y=1;
+		
+		if(schreiben1==0)
+			{ 
+				schreiben1=1;
+				glcd_fill_rect(10, 1, 16, 5, BLACK);
+				block1=1;
+			}
+			
+		if(block1==1)
+		{		
+			if((y1==block_1y+7) && (x1>=block_1x-2) && (x1<=block_1x+18))
+			{
+				block1=0;
+				y_richtung=DOWN;
+				glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((y1==block_1y-2) && (x1>=block_1x-2) && (x1<=block_1x+18))
+			{
+				block1=0;
+				y_richtung=UP;
+				glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x1==block_1x-2) && (y1>=block_1y-2) && (y1<=block_1y+7))
+			{
+				block1=0;
+				x_richtung=LINKS;
+				glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x1==block_1x+18) && (y1>=block_1y-2) && (y1<=block_1y+7))
+			{
+				block1=0;
+				x_richtung=RECHTS;
+				glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
+				score++;
+			}
+		}
+	}
 
-void block_1(uint8_t x1, uint8_t y1)
-{
-	const static uint8_t block_1x=10;
-	const static uint8_t block_1y=1;
-	
-	if(schreiben1==0)
+
+	void block_2(uint8_t x2, uint8_t y2)
+	{
+		const static uint8_t block_2x=36;
+		const static uint8_t block_2y=1;
+		
+		if(schreiben2==0)
 		{ 
-			schreiben1=1;
-			glcd_fill_rect(10, 1, 16, 5, BLACK);
-			block1=1;
+			schreiben2=1;
+			glcd_fill_rect(36, 1, 16, 5, BLACK);
+			block2=1;
 		}
 		
-	if(block1==1)
-	{		
-		if((y1==block_1y+7) && (x1>=block_1x-2) && (x1<=block_1x+18))
+		if(block2==1)
 		{
-			block1=0;
-			y_richtung=DOWN;
-			glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((y1==block_1y-2) && (x1>=block_1x-2) && (x1<=block_1x+18))
-		{
-			block1=0;
-			y_richtung=UP;
-			glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x1==block_1x-2) && (y1>=block_1y-2) && (y1<=block_1y+7))
-		{
-			block1=0;
-			x_richtung=LINKS;
-			glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x1==block_1x+18) && (y1>=block_1y-2) && (y1<=block_1y+7))
-		{
-			block1=0;
-			x_richtung=RECHTS;
-			glcd_fill_rect(block_1x, block_1y, 16, 5, WHITE);
-			score++;
+			if((y2==block_2y+7) && (x2>=block_2x-2) && (x2<=block_2x+18))
+			{
+				block2=0;
+				y_richtung=DOWN;
+				glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((y2==block_2y-2) && (x2>=block_2x-2) && (x2<=block_2x+18))
+			{
+				block2=0;
+				y_richtung=UP;
+				glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x2==block_2x-2) && (y2>=block_2y-2) && (y2<=block_2y+7))
+			{
+				block2=0;
+				x_richtung=LINKS;
+				glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x2==block_2x+18) && (y2>=block_2y-2) && (y2<=block_2y+7))
+			{
+				block2=0;
+				x_richtung=RECHTS;
+				glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
+				score++;
+			}
 		}
 	}
-}
 
 
-void block_2(uint8_t x2, uint8_t y2)
-{
-	const static uint8_t block_2x=36;
-	const static uint8_t block_2y=1;
-	
-	if(schreiben2==0)
-	{ 
-		schreiben2=1;
-		glcd_fill_rect(36, 1, 16, 5, BLACK);
-		block2=1;
-	}
-	
-	if(block2==1)
+	void block_3(uint8_t x3, uint8_t y3)
 	{
-		if((y2==block_2y+7) && (x2>=block_2x-2) && (x2<=block_2x+18))
-		{
-			block2=0;
-			y_richtung=DOWN;
-			glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
-			score++;
+		const static uint8_t block_3x=62;
+		const static uint8_t block_3y=1;
+		
+		if(schreiben3==0)
+		{ 
+			schreiben3=1;
+			glcd_fill_rect(62, 1, 16, 5, BLACK);
+			block3=1;
 		}
 		
-		if((y2==block_2y-2) && (x2>=block_2x-2) && (x2<=block_2x+18))
+		if(block3==1)
 		{
-			block2=0;
-			y_richtung=UP;
-			glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x2==block_2x-2) && (y2>=block_2y-2) && (y2<=block_2y+7))
-		{
-			block2=0;
-			x_richtung=LINKS;
-			glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x2==block_2x+18) && (y2>=block_2y-2) && (y2<=block_2y+7))
-		{
-			block2=0;
-			x_richtung=RECHTS;
-			glcd_fill_rect(block_2x, block_2y, 16, 5, WHITE);
-			score++;
+			if((y3==block_3y+7) && (x3>=block_3x-2) && (x3<=block_3x+18))
+			{
+				block3=0;
+				y_richtung=DOWN;
+				glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((y3==block_3y-2) && (x3>=block_3x-2) && (x3<=block_3x+18))
+			{
+				block3=0;
+				y_richtung=UP;
+				glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x3==block_3x-2) && (y3>=block_3y-2) && (y3<=block_3y+7))
+			{
+				block3=0;
+				x_richtung=LINKS;
+				glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x3==block_3x+18) && (y3>=block_3y-2) && (y3<=block_3y+7))
+			{
+				block3=0;
+				x_richtung=RECHTS;
+				glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
+				score++;
+			}	
 		}
 	}
-}
 
 
-void block_3(uint8_t x3, uint8_t y3)
-{
-	const static uint8_t block_3x=62;
-	const static uint8_t block_3y=1;
-	
-	if(schreiben3==0)
-	{ 
-		schreiben3=1;
-		glcd_fill_rect(62, 1, 16, 5, BLACK);
-		block3=1;
-	}
-	
-	if(block3==1)
+	void block_4(uint8_t x4, uint8_t y4)
 	{
-		if((y3==block_3y+7) && (x3>=block_3x-2) && (x3<=block_3x+18))
-		{
-			block3=0;
-			y_richtung=DOWN;
-			glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
-			score++;
-		}
+		const static uint8_t block_4x=18;
+		const static uint8_t block_4y=7;
 		
-		if((y3==block_3y-2) && (x3>=block_3x-2) && (x3<=block_3x+18))
-		{
-			block3=0;
-			y_richtung=UP;
-			glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x3==block_3x-2) && (y3>=block_3y-2) && (y3<=block_3y+7))
-		{
-			block3=0;
-			x_richtung=LINKS;
-			glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x3==block_3x+18) && (y3>=block_3y-2) && (y3<=block_3y+7))
-		{
-			block3=0;
-			x_richtung=RECHTS;
-			glcd_fill_rect(block_3x, block_3y, 16, 5, WHITE);
-			score++;
-		}	
-	}
-}
-
-
-void block_4(uint8_t x4, uint8_t y4)
-{
-	const static uint8_t block_4x=18;
-	const static uint8_t block_4y=7;
-	
-	if(schreiben4==0)
-	{ 
-		schreiben4=1;
-		glcd_fill_rect(18, 7, 16, 5, BLACK);
-		block4=1;
-	}
-	
-	if(block4==1)
-	{
-		if((y4==block_4y+7) && (x4>=block_4x-2) && (x4<=block_4x+18))
-		{
-			block4=0;
-			y_richtung=DOWN;
-			glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
-			score++;
+		if(schreiben4==0)
+		{ 
+			schreiben4=1;
+			glcd_fill_rect(18, 7, 16, 5, BLACK);
+			block4=1;
 		}
 		
 		if(block4==1)
-		{	
-			if((y4==block_4y-2) && (x4>=block_4x-2) && (x4<=block_4x+18))
+		{
+			if((y4==block_4y+7) && (x4>=block_4x-2) && (x4<=block_4x+18))
 			{
 				block4=0;
-				y_richtung=UP;
+				y_richtung=DOWN;
+				glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if(block4==1)
+			{	
+				if((y4==block_4y-2) && (x4>=block_4x-2) && (x4<=block_4x+18))
+				{
+					block4=0;
+					y_richtung=UP;
+					glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
+					score++;
+				}
+			}
+			
+			if((x4==block_4x-2) && (y4>=block_4y-2) && (y4<=block_4y+7))
+			{
+				block4=0;
+				x_richtung=LINKS;
+				glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x4==block_4x+18) && (y4>=block_4y-2) && (y4<=block_4y+7))
+			{
+				block4=0;
+				x_richtung=RECHTS;
 				glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
 				score++;
 			}
 		}
-		
-		if((x4==block_4x-2) && (y4>=block_4y-2) && (y4<=block_4y+7))
-		{
-			block4=0;
-			x_richtung=LINKS;
-			glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x4==block_4x+18) && (y4>=block_4y-2) && (y4<=block_4y+7))
-		{
-			block4=0;
-			x_richtung=RECHTS;
-			glcd_fill_rect(block_4x, block_4y, 16, 5, WHITE);
-			score++;
-		}
 	}
-}
 
 
-void block_5(uint8_t x5, uint8_t y5)
-{
-	const static uint8_t block_5x=54;
-	const static uint8_t block_5y=7;
-	
-	if(schreiben5==0)
-	{ 
-		schreiben5=1;
-		glcd_fill_rect(54, 7, 16, 5, BLACK);
-		block5=1;
-	}
-	
-	if(block5==1)
+	void block_5(uint8_t x5, uint8_t y5)
 	{
-		if((y5==block_5y+7) && (x5>=block_5x-2) && (x5<=block_5x+18))
-		{
-			block5=0;
-			y_richtung=DOWN;
-			glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
-			score++;
+		const static uint8_t block_5x=54;
+		const static uint8_t block_5y=7;
+		
+		if(schreiben5==0)
+		{ 
+			schreiben5=1;
+			glcd_fill_rect(54, 7, 16, 5, BLACK);
+			block5=1;
 		}
 		
-		if((y5==block_5y-2) && (x5>=block_5x-2) && (x5<=block_5x+18))
+		if(block5==1)
 		{
-			block5=0;
-			y_richtung=UP;
-			glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x5==block_5x-2) && (y5>=block_5y-2) && (y5<=block_5y+7))
-		{
-			block5=0;
-			x_richtung=LINKS;
-			glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x5==block_5x+18) && (y5>=block_5y-2) && (y5<=block_5y+7))
-		{
-			block5=0;
-			x_richtung=RECHTS;
-			glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
-			score++;
+			if((y5==block_5y+7) && (x5>=block_5x-2) && (x5<=block_5x+18))
+			{
+				block5=0;
+				y_richtung=DOWN;
+				glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((y5==block_5y-2) && (x5>=block_5x-2) && (x5<=block_5x+18))
+			{
+				block5=0;
+				y_richtung=UP;
+				glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x5==block_5x-2) && (y5>=block_5y-2) && (y5<=block_5y+7))
+			{
+				block5=0;
+				x_richtung=LINKS;
+				glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x5==block_5x+18) && (y5>=block_5y-2) && (y5<=block_5y+7))
+			{
+				block5=0;
+				x_richtung=RECHTS;
+				glcd_fill_rect(block_5x, block_5y, 16, 5, WHITE);
+				score++;
+			}
 		}
 	}
-}
 
 
-void block_6(uint8_t x6, uint8_t y6)
-{
-	const static uint8_t block_6x=36;
-	const static uint8_t block_6y=7;
-	
-	if(schreiben6==0)
-	{ 
-		schreiben6=1;
-		glcd_fill_rect(36, 7, 16, 5, BLACK);
-		block6=1;
-	}
-	
-	if(block6==1)
+	void block_6(uint8_t x6, uint8_t y6)
 	{
-		if((y6==block_6y+7) && (x6>=block_6x-2) && (x6<=block_6x+18))
-		{
-			block6=0;
-			y_richtung=DOWN;
-			glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
-			score++;
+		const static uint8_t block_6x=36;
+		const static uint8_t block_6y=7;
+		
+		if(schreiben6==0)
+		{ 
+			schreiben6=1;
+			glcd_fill_rect(36, 7, 16, 5, BLACK);
+			block6=1;
 		}
 		
-		if((y6==block_6y-2) && (x6>=block_6x-2) && (x6<=block_6x+18))
+		if(block6==1)
 		{
-			block6=0;
-			y_richtung=UP;
-			glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x6==block_6x-2) && (y6>=block_6y-2) && (y6<=block_6y+7))
-		{
-			block6=0;
-			x_richtung=LINKS;
-			glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
-			score++;
-		}
-		
-		if((x6==block_6x+18) && (y6>=block_6y-2) && (y6<=block_6y+7))
-		{
-			block6=0;
-			x_richtung=RECHTS;
-			glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
-			score++;
+			if((y6==block_6y+7) && (x6>=block_6x-2) && (x6<=block_6x+18))
+			{
+				block6=0;
+				y_richtung=DOWN;
+				glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((y6==block_6y-2) && (x6>=block_6x-2) && (x6<=block_6x+18))
+			{
+				block6=0;
+				y_richtung=UP;
+				glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x6==block_6x-2) && (y6>=block_6y-2) && (y6<=block_6y+7))
+			{
+				block6=0;
+				x_richtung=LINKS;
+				glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
+				score++;
+			}
+			
+			if((x6==block_6x+18) && (y6>=block_6y-2) && (y6<=block_6y+7))
+			{
+				block6=0;
+				x_richtung=RECHTS;
+				glcd_fill_rect(block_6x, block_6y, 16, 5, WHITE);
+				score++;
+			}
 		}
 	}
-}
-	
+			
+
 int main(void)
 {	
 
@@ -661,6 +668,11 @@ int main(void)
 			entprell=2;
 			refresh_ball=1;
 			speed_y=4;
+			w0=0;
+			w1=0;
+			w2=0;
+			w3=0;
+			w4=0;
 		}
 		
 		if(TASTER_G)													//Anfang Taster abfragen
@@ -692,6 +704,7 @@ int main(void)
 		if(taster_rot>0)
 		{
 			refresh_balk=1;
+			refresh_ball=1;
 			x_recht--;
 			
 			if(x_recht<1)
@@ -705,7 +718,6 @@ int main(void)
 	{	
 		if(start==0)
 		{
-			
 			refresh_ball=1;
 			refresh_balk=1;
 			start=1;
@@ -713,98 +725,196 @@ int main(void)
 		ball_neu=ball_alt;
 		ball_neu.posy=42;
 		ball_neu.posx=x_recht+8;
+		refresh_ball=1;
 	}
 
 
-	if(win==0)
+		
+	
+	switch(muster)
+	{
+		case 0:		if(ende>0)
+					{
+						if((block1==0) && (block2==0) && (block3==0) && (block4==0) && (block5==0) && (block6==0))
+						{
+							
+							win=0;
+							glcd_draw_string_xy(25, 21, "FINISH");
+						}		
+					}
+					
+					if(win==0)
+					{
+						x0=3;
+						x1=5;
+						x2=7;
+						x2_1=8;
+						x3_1=8;
+						x3=7;
+						x4=5;
+						y0=15;
+						y1_1=8;
+						y2=5;
+						y2_1=6;
+						y3_1=6;
+						y3=5;
+						y4=8;
+						w0=1;
+						schreiben1=0;
+						schreiben2=0;
+						schreiben3=0;
+						schreiben4=1;
+						schreiben5=1;
+						schreiben6=1;
+						muster=1;
+						
+					}
+					break;
+					
+		case 1:		if(win==1)
+					{
+						
+						x0=2;
+						x1=4;
+						x2=6;
+						x2_1=7;
+						x3_1=7;
+						x3=6;
+						x4=4;
+						y0=14;
+						y1_1=7;
+						y2=4;
+						y2_1=5;
+						y3_1=5;
+						y3=4;
+						y4=7;
+						w1=1;
+						schreiben1=0;
+						schreiben2=1;
+						schreiben3=0;
+						schreiben4=1;
+						schreiben5=1;
+						schreiben6=0;
+						muster=2;
+						
+					}
+					break;
+					
+		case 2:		if(win==2)
+					{
+						
+						x0=2;
+						x1=3;
+						x2=5;
+						x2_1=6;
+						x3_1=6;
+						x3=5;
+						x4=3;
+						y0=13;
+						y1_1=6;
+						y2=3;
+						y2_1=4;
+						y3_1=4;
+						y3=3;
+						y4=6;
+						w2=1;
+						schreiben1=0;
+						schreiben2=1;
+						schreiben3=0;
+						schreiben4=0;
+						schreiben5=0;
+						schreiben6=1;
+						muster=3;
+						
+					}
+					break;
+					
+		case 3:		if(win==3)
+					{
+						
+						x0=1;
+						x1=2;
+						x2=4;
+						x2_1=5;
+						x3_1=5;
+						x3=4;
+						x4=2;
+						y0=12;
+						y1_1=5;
+						y2=2;
+						y2_1=3;
+						y3_1=3;
+						y3=2;
+						y4=5;
+						w3=1;
+						schreiben1=0;
+						schreiben2=0;
+						schreiben3=0;
+						schreiben4=0;
+						schreiben5=0;
+						schreiben6=0;
+						muster=4;
+						
+					}
+					
+		case 4:		if(win==4)
+					{
+						
+						x0=1;
+						x1=2;
+						x2=2;
+						x2_1=2;
+						x3_1=2;
+						x3=2;
+						x4=1;
+						y0=20;
+						y1_1=2;
+						y2=1;
+						y2_1=2;
+						y3_1=2;
+						y3=1;
+						y4=20;
+						w4=1;
+						schreiben1=0;
+						schreiben2=0;
+						schreiben3=0;
+						schreiben4=0;
+						schreiben5=0;
+						schreiben6=0;
+						muster=0;
+						ende++;
+						
+					}
+	}
+	
+		
+		
+		if(w0==1)
 		{
-			x0=3;
-			x1=5;
-			x2=7;
-			x2_1=8;
-			x3_1=8;
-			x3=7;
-			x4=5;
-			y0=15;
-			y1_1=8;
-			y2=5;
-			y2_1=6;
-			y3_1=6;
-			y3=5;
-			y4=8;
-		}
-
-	if(win==1)
-		{
-			x0=2;
-			x1=4;
-			x2=6;
-			x2_1=7;
-			x3_1=7;
-			x3=6;
-			x4=4;
-			y0=14;
-			y1_1=7;
-			y2=4;
-			y2_1=5;
-			y3_1=5;
-			y3=4;
-			y4=7;
+			glcd_draw_string_xy(25, 21, "LEVEL1");
 		}
 		
-		if(win==2)
+		if(w1==1)
 		{
-			x0=2;
-			x1=3;
-			x2=5;
-			x2_1=6;
-			x3_1=6;
-			x3=5;
-			x4=3;
-			y0=13;
-			y1_1=6;
-			y2=3;
-			y2_1=4;
-			y3_1=4;
-			y3=3;
-			y4=6;
+			glcd_draw_string_xy(25, 21, "LEVEL2");
 		}
 		
-		if(win==3)
+		if(w2==1)
 		{
-			x0=1;
-			x1=2;
-			x2=4;
-			x2_1=5;
-			x3_1=5;
-			x3=4;
-			x4=2;
-			y0=12;
-			y1_1=5;
-			y2=2;
-			y2_1=3;
-			y3_1=3;
-			y3=2;
-			y4=5;
-		}									
+			glcd_draw_string_xy(25, 21, "LEVEL3");
+		}
 		
-		if(win==4)
+		if(w3==1)
 		{
-			x0=1;
-			x1=2;
-			x2=2;
-			x2_1=2;
-			x3_1=2;
-			x3=2;
-			x4=1;
-			y0=20;
-			y1_1=2;
-			y2=1;
-			y2_1=2;
-			y3_1=2;
-			y3=1;
-			y4=20;
-		}		
+			glcd_draw_string_xy(25, 21, "LEVEL4");
+		}
+		
+		if(w4==1)
+		{
+			glcd_draw_string_xy(25, 21, "LEVEL5");
+		}																
+		
+		
 		
 
 		if((ball_neu.posx==3) && (ball_neu.posy>=3))					//Anfang Ballrichtung Festlegen / Anfang Ball
@@ -906,6 +1016,9 @@ int main(void)
 		{
 			beginn=1;
 			leben--;
+			start=0;
+			taster_blau=0;
+			
 		
 //			if(score==0)
 //			{
@@ -958,7 +1071,7 @@ int main(void)
 			
 		}
 		
-		if((block1==0) && (block2==0) && (block3==0) && (block4==0) && (block5==0))
+		if((block1==0) && (block2==0) && (block3==0) && (block4==0) && (block5==0) && (block6==0))
 		{
 			start=0;
 			taster_blau=0;
@@ -974,12 +1087,9 @@ int main(void)
 			win++;
 		}
 			
+		
+				
 			
-			if(win==5)
-			{
-				glcd_draw_string_xy(25, 21, "FINISH");
-				win=0;
-			}
 		
 
 			
